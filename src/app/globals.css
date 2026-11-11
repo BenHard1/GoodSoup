@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/*
+ * Design system Good Soup — jetons de couleur.
+ * Palette d'origine : corail #F47C58, sauge #A8C686, citron #F4C65B, crème #F9EBD6, vert foncé #39483C.
+ * Contrastes vérifiés (WCAG AA) : le texte est en vert foncé ; le corail vif reste décoratif,
+ * les boutons principaux utilisent un corail profond (#C2502E, 4.7:1 avec du blanc).
+ */
+@theme {
+  --color-coral: #f47c58;
+  --color-coral-strong: #c2502e;
+  --color-coral-deep: #a8432a;
+  --color-coral-soft: #fde3d9;
+  --color-sage: #a8c686;
+  --color-sage-soft: #e7f0dc;
+  --color-lemon: #f4c65b;
+  --color-lemon-soft: #fdf1d3;
+  --color-cream: #f9ebd6;
+  --color-paper: #fffbf5;
+  --color-ink: #39483c;
+  --color-ink-soft: #5e6b60;
+  --color-ink-faint: #8a958c;
+  --color-line: #eadfcd;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-success: #3b6d2a;
+
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --radius-card: 1rem;
+  --radius-field: 0.75rem;
+
+  --shadow-card: 0 1px 2px rgb(57 72 60 / 0.06), 0 4px 16px rgb(57 72 60 / 0.06);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
