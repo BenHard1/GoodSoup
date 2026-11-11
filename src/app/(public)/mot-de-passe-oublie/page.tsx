@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
     >
       <ForgotPasswordForm />
       <p className="mt-4 text-center text-sm">
-        <Link href="/connexion" className="font-semibold text-coral-strong underline">
+        <Link href="/connexion" className="font-semibold text-coral-deep underline">
           Retour à la connexion
         </Link>
       </p>

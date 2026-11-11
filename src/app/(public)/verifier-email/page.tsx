@@ -9,7 +9,7 @@ export default async function CheckEmailPage({ searchParams }: PageProps<"/verif
   return (
     <AuthCard title="Vérifie ta boîte mail">
       <div className="flex flex-col items-center gap-4 text-center">
-        <MailCheck aria-hidden className="size-14 text-coral-strong" />
+        <MailCheck aria-hidden className="size-14 text-coral-deep" />
         <p>
           Un lien de confirmation a été envoyé
           {typeof email === "string" ? (

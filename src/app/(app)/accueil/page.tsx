@@ -38,7 +38,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-8">
       <section className="rounded-card bg-cream p-6 sm:p-8">
-        <p className="font-semibold text-coral-strong">{household?.name}</p>
+        <p className="font-semibold text-coral-deep">{household?.name}</p>
         <h1 className="mt-1 text-3xl font-semibold sm:text-4xl">
           {greeting} {profile?.display_name} !
         </h1>
@@ -47,7 +47,7 @@ export default async function HomePage() {
         </p>
         <Link
           href="/foyer"
-          className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-coral-strong underline-offset-4 hover:underline"
+          className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-coral-deep underline-offset-4 hover:underline"
         >
           <Users aria-hidden className="size-4" /> Inviter quelqu&apos;un dans mon foyer
         </Link>

@@ -22,10 +22,7 @@ export function SignInForm({ next }: { next?: string }) {
       </Field>
       <SubmitButton pendingLabel="Connexion…">Se connecter</SubmitButton>
       <p className="text-center text-sm">
-        <Link
-          href="/mot-de-passe-oublie"
-          className="font-semibold text-coral-strong underline-offset-4 hover:underline"
-        >
+        <Link href="/mot-de-passe-oublie" className="font-semibold text-coral-deep underline-offset-4 hover:underline">
           Mot de passe oublié ?
         </Link>
       </p>
@@ -56,7 +53,7 @@ export function SignUpForm({ next }: { next?: string }) {
           <input name="acceptTerms" type="checkbox" className="mt-0.5 size-5 accent-coral-strong" required />
           <span>
             J&apos;ai lu la{" "}
-            <Link href="/confidentialite" className="font-semibold text-coral-strong underline" target="_blank">
+            <Link href="/confidentialite" className="font-semibold text-coral-deep underline" target="_blank">
               politique de confidentialité
             </Link>
             .

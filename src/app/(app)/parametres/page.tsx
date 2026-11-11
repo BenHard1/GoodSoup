@@ -30,7 +30,7 @@ export default async function SettingsPage() {
         <p className="mt-2 text-ink-soft">
           L&apos;export de toutes tes données (profil, recettes) arrive avec la bibliothèque de recettes (Phase 1). Voir
           la{" "}
-          <Link href="/confidentialite" className="font-semibold text-coral-strong underline">
+          <Link href="/confidentialite" className="font-semibold text-coral-deep underline">
             politique de confidentialité
           </Link>
           .

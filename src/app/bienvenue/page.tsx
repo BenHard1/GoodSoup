@@ -37,7 +37,7 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/bienv
         <Logo />
       </header>
       <main id="contenu" className="mx-auto max-w-2xl px-4 pb-16">
-        <p className="text-sm font-semibold text-coral-strong">
+        <p className="text-sm font-semibold text-coral-deep">
           Étape {index + 1} sur {STEPS.length}
         </p>
         <div className="mt-2 flex gap-2" aria-hidden>

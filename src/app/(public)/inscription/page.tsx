@@ -16,7 +16,7 @@ export default async function SignUpPage({ searchParams }: PageProps<"/inscripti
           Déjà inscrit ?{" "}
           <Link
             href={next ? `/connexion?next=${encodeURIComponent(next)}` : "/connexion"}
-            className="font-semibold text-coral-strong underline"
+            className="font-semibold text-coral-deep underline"
           >
             Connecte-toi
           </Link>

@@ -11,7 +11,7 @@ export function ComingSoonPanel({ title, phase, children }: { title: string; pha
         </span>
         <div>
           <h2 className="text-xl font-semibold">{title}</h2>
-          <p className="text-sm font-semibold text-coral-strong">Arrive en Phase {phase}</p>
+          <p className="text-sm font-semibold text-coral-deep">Arrive en Phase {phase}</p>
         </div>
       </div>
       <div className="mt-4 space-y-2 text-ink-soft">{children}</div>

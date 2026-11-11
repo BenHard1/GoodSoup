@@ -32,7 +32,7 @@ export function AppShell({
               href="/assistant"
               className="flex min-h-11 items-center gap-2 rounded-full border border-line bg-white px-3 text-sm font-semibold hover:bg-cream"
             >
-              <Sparkles aria-hidden className="size-4 text-coral-strong" />
+              <Sparkles aria-hidden className="size-4 text-coral-deep" />
               <span className="hidden sm:inline">Assistant</span>
               <span className="sr-only sm:hidden">Assistant</span>
             </Link>

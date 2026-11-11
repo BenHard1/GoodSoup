@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/connexion"
           Pas encore de compte ?{" "}
           <Link
             href={next ? `/inscription?next=${encodeURIComponent(next)}` : "/inscription"}
-            className="font-semibold text-coral-strong underline"
+            className="font-semibold text-coral-deep underline"
           >
             Inscris-toi
           </Link>
