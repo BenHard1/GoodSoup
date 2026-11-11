@@ -65,7 +65,9 @@ jobs:
         run: npm run build
 
       - name: Installer Chromium pour Playwright
-        run: npx playwright install --with-deps chromium
+        # Les bibliothèques système de Chromium sont déjà présentes sur ubuntu-latest ;
+        # éviter apt rend l'étape indépendante des miroirs Ubuntu.
+        run: npx playwright install chromium
 
       - name: Parcours utilisateurs (mobile et ordinateur)
         run: npm run test:e2e -- --trace off
