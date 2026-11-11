@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { fail, ok, type ActionState } from "@/lib/action-state";
 import { publicEnv } from "@/lib/env";
+import { safeNextPath } from "@/lib/safe-redirect";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { getMyProfile } from "./queries";
 import { extractInvitationToken, householdNameSchema, parseFoodProfileForm } from "./schemas";
@@ -15,6 +16,15 @@ async function requireUser() {
   const user = await getCurrentUser();
   if (!user) redirect("/connexion");
   return user;
+}
+
+/**
+ * Après succès, redirige côté serveur si le formulaire le demande (parcours de bienvenue, invitation).
+ * Une redirection serveur est fiable même si la page se réaffiche autrement après la mise à jour.
+ */
+function redirectIfRequested(formData: FormData) {
+  const dest = safeNextPath(formData.get("redirectTo"), "");
+  if (dest) redirect(dest);
 }
 
 /** Message lisible depuis une erreur levée par une fonction SQL (P0001 / 42501). */
@@ -44,6 +54,7 @@ export async function createHousehold(_prev: ActionState, formData: FormData): P
   if (error) return fail(dbMessage(error, "Impossible de créer le foyer."));
   await setActiveHousehold(data as string);
   revalidatePath("/", "layout");
+  redirectIfRequested(formData);
   return ok("Foyer créé.");
 }
 
@@ -56,6 +67,7 @@ export async function joinHousehold(_prev: ActionState, formData: FormData): Pro
   if (error) return fail(dbMessage(error, "Impossible de rejoindre ce foyer."));
   await setActiveHousehold(data as string);
   revalidatePath("/", "layout");
+  redirectIfRequested(formData);
   return ok("Bienvenue dans le foyer !");
 }
 

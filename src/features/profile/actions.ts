@@ -6,6 +6,7 @@ import { z } from "zod";
 import { displayNameSchema } from "@/features/auth/schemas";
 import { getMyHouseholds } from "@/features/households/queries";
 import { fail, ok, type ActionState } from "@/lib/action-state";
+import { safeNextPath } from "@/lib/safe-redirect";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 
@@ -18,6 +19,8 @@ export async function updateDisplayName(_prev: ActionState, formData: FormData):
   const { error } = await supabase.from("profiles").update({ display_name: parsed.data }).eq("id", user.id);
   if (error) return fail("Impossible d'enregistrer le pseudonyme.");
   revalidatePath("/", "layout");
+  const dest = safeNextPath(formData.get("redirectTo"), "");
+  if (dest) redirect(dest);
   return ok("Pseudonyme enregistré.");
 }
 

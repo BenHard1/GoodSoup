@@ -1,27 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { createHousehold, joinHousehold } from "@/features/households/actions";
 import { updateDisplayName } from "@/features/profile/actions";
-import { initialActionState, type ActionState } from "@/lib/action-state";
-
-function useGoOnSuccess(state: ActionState, href: string) {
-  const router = useRouter();
-  useEffect(() => {
-    if (state.status === "success") router.push(href);
-  }, [state, href, router]);
-}
+import { initialActionState } from "@/lib/action-state";
 
 export function NameStep({ defaultName }: { defaultName: string }) {
   const [state, action] = useActionState(updateDisplayName, initialActionState);
-  useGoOnSuccess(state, "/bienvenue?etape=foyer");
   return (
     <form action={action} className="flex flex-col gap-4">
+      <input type="hidden" name="redirectTo" value="/bienvenue?etape=foyer" />
       {state.status === "error" && state.message ? <Alert tone="error">{state.message}</Alert> : null}
       <Field
         label="Prénom ou pseudonyme"
@@ -38,14 +30,13 @@ export function NameStep({ defaultName }: { defaultName: string }) {
 export function HouseholdStep({ defaultName }: { defaultName: string }) {
   const [createState, createAction] = useActionState(createHousehold, initialActionState);
   const [joinState, joinAction] = useActionState(joinHousehold, initialActionState);
-  useGoOnSuccess(createState, "/bienvenue?etape=alimentation");
-  useGoOnSuccess(joinState, "/bienvenue?etape=alimentation");
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Card>
         <h2 className="text-xl font-semibold">Créer mon foyer</h2>
         <p className="mt-1 text-sm text-ink-soft">Tu pourras ensuite inviter les personnes avec qui tu cuisines.</p>
         <form action={createAction} className="mt-4 flex flex-col gap-4">
+          <input type="hidden" name="redirectTo" value="/bienvenue?etape=alimentation" />
           {createState.status === "error" && createState.message ? (
             <Alert tone="error">{createState.message}</Alert>
           ) : null}
@@ -59,6 +50,7 @@ export function HouseholdStep({ defaultName }: { defaultName: string }) {
         <h2 className="text-xl font-semibold">Rejoindre un foyer</h2>
         <p className="mt-1 text-sm text-ink-soft">Colle le lien d&apos;invitation qu&apos;on t&apos;a envoyé.</p>
         <form action={joinAction} className="mt-4 flex flex-col gap-4">
+          <input type="hidden" name="redirectTo" value="/bienvenue?etape=alimentation" />
           {joinState.status === "error" && joinState.message ? <Alert tone="error">{joinState.message}</Alert> : null}
           <Field label="Lien d'invitation" error={joinState.fieldErrors?.invitation}>
             {(p) => <Input {...p} name="invitation" inputMode="url" autoComplete="off" required />}
