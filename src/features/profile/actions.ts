@@ -47,6 +47,17 @@ export async function deleteAccount(_prev: ActionState, formData: FormData): Pro
     return fail("Tape SUPPRIMER pour confirmer.", { confirmation: ["Tape SUPPRIMER en majuscules."] });
   }
   const admin = createAdminClient();
+  // Les photos de ses recettes sont effacées du stockage avant la suppression en cascade des recettes.
+  const { data: images, error: imagesError } = await admin
+    .from("recipe_images")
+    .select("storage_path, recipes!inner(owner_id)")
+    .eq("recipes.owner_id", user.id);
+  if (imagesError) return fail("La suppression a échoué. Réessaie ou contacte-nous.");
+  const paths = (images ?? []).map((i) => i.storage_path as string);
+  for (let i = 0; i < paths.length; i += 100) {
+    const { error: storageError } = await admin.storage.from("recipe-images").remove(paths.slice(i, i + 100));
+    if (storageError) return fail("La suppression de tes photos a échoué. Réessaie ou contacte-nous.");
+  }
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) return fail("La suppression a échoué. Réessaie ou contacte-nous.");
   const supabase = await createClient();
