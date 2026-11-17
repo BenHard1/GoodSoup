@@ -47,7 +47,7 @@ test.describe("Parcours F — bibliothèque publique", () => {
     await other.getByRole("button", { name: "Copier dans mes recettes" }).click();
     await expect(other.getByText(/Copie ajoutée à tes recettes/)).toBeVisible();
     await expect(other.getByText("D'après une recette partagée par Zoe")).toBeVisible();
-    await expect(other.getByText("Privée")).toBeVisible();
+    await expect(other.getByText("Privée", { exact: true })).toBeVisible();
     await other.getByRole("link", { name: "Modifier" }).click();
     // La copie d'une recette d'un autre auteur ne peut pas être republiée.
     await expect(other.getByRole("radio", { name: /Publique/ })).toBeDisabled();

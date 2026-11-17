@@ -66,7 +66,7 @@ test.describe("Parcours B — ma bibliothèque de recettes", () => {
     await page.getByLabel("Nom de l'ingrédient 4", { exact: true }).fill("cumin");
     await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Velouté de potiron au cumin" })).toBeVisible();
-    await expect(page.getByText("1 c. à café")).toBeVisible();
+    await expect(page.getByRole("region", { name: "Ingrédients" })).toContainText("1 c. à café cumin");
 
     // Favori
     await page.getByRole("button", { name: "Ajouter aux favoris" }).click();

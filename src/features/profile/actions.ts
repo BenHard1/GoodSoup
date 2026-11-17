@@ -48,10 +48,12 @@ export async function deleteAccount(_prev: ActionState, formData: FormData): Pro
   }
   const admin = createAdminClient();
   // Les photos de ses recettes sont effacées du stockage avant la suppression en cascade des recettes.
-  const { data: images, error: imagesError } = await admin
-    .from("recipe_images")
-    .select("storage_path, recipes!inner(owner_id)")
-    .eq("recipes.owner_id", user.id);
+  const { data: owned, error: ownedError } = await admin.from("recipes").select("id").eq("owner_id", user.id);
+  if (ownedError) return fail("La suppression a échoué. Réessaie ou contacte-nous.");
+  const recipeIds = (owned ?? []).map((r) => r.id as string);
+  const { data: images, error: imagesError } = recipeIds.length
+    ? await admin.from("recipe_images").select("storage_path").in("recipe_id", recipeIds)
+    : { data: [], error: null };
   if (imagesError) return fail("La suppression a échoué. Réessaie ou contacte-nous.");
   const paths = (images ?? []).map((i) => i.storage_path as string);
   for (let i = 0; i < paths.length; i += 100) {

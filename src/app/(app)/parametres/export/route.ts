@@ -29,7 +29,7 @@ export async function GET() {
          visibility, origin, source_url, source_name, attribution, published_at, created_at, updated_at,
          recipe_ingredients(position, section, name, quantity, quantity_max, unit_code, note, is_optional),
          recipe_steps(position, section, instruction, duration_minutes),
-         recipe_images(storage_path, position, alt_text),
+         recipe_images!recipe_images_recipe_id_fkey(storage_path, position, alt_text),
          recipe_categories(categories(name))`,
       )
       .eq("owner_id", user.id)
