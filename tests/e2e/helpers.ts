@@ -53,3 +53,53 @@ export async function signOut(page: Page) {
   await page.getByRole("menuitem", { name: "Se déconnecter" }).click();
   await expect(page).toHaveURL(/\/connexion/);
 }
+
+/** Inscription complète + parcours de bienvenue avec création d'un foyer. */
+export async function signUpAndOnboard(page: Page, { name, household }: { name: string; household: string }) {
+  const email = uniqueEmail(name.toLowerCase());
+  await signUp(page, { name, email });
+  await expect(page).toHaveURL(/\/bienvenue/);
+  await page.getByRole("button", { name: "Continuer" }).click();
+  await page.getByLabel("Nom du foyer").fill(household);
+  await page.getByRole("button", { name: "Créer", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Tes préférences" })).toBeVisible();
+  await page.getByRole("button", { name: /Terminer/ }).click();
+  await expect(page).toHaveURL(/\/accueil/);
+  return email;
+}
+
+type IngredientInput = { quantity?: string; unit?: string; name: string };
+
+/** Remplit le formulaire de recette (création ou modification). */
+export async function fillRecipe(
+  page: Page,
+  r: {
+    title: string;
+    servings?: string;
+    prep?: string;
+    cook?: string;
+    ingredients: IngredientInput[];
+    steps: string[];
+  },
+) {
+  await page.getByLabel("Titre", { exact: true }).fill(r.title);
+  if (r.servings) await page.getByLabel("Portions", { exact: true }).fill(r.servings);
+  if (r.prep) await page.getByLabel("Préparation (min)").fill(r.prep);
+  if (r.cook) await page.getByLabel("Cuisson (min)").fill(r.cook);
+  for (const [i, ing] of r.ingredients.entries()) {
+    const n = i + 1;
+    if ((await page.getByLabel(`Nom de l'ingrédient ${n}`, { exact: true }).count()) === 0) {
+      await page.getByRole("button", { name: "Ajouter un ingrédient" }).click();
+    }
+    await page.getByLabel(`Quantité de l'ingrédient ${n}`, { exact: true }).fill(ing.quantity ?? "");
+    if (ing.unit) await page.getByLabel(`Unité de l'ingrédient ${n}`, { exact: true }).selectOption(ing.unit);
+    await page.getByLabel(`Nom de l'ingrédient ${n}`, { exact: true }).fill(ing.name);
+  }
+  for (const [i, step] of r.steps.entries()) {
+    const n = i + 1;
+    if ((await page.getByLabel(`Étape ${n}`, { exact: true }).count()) === 0) {
+      await page.getByRole("button", { name: "Ajouter une étape" }).click();
+    }
+    await page.getByLabel(`Étape ${n}`, { exact: true }).fill(step);
+  }
+}

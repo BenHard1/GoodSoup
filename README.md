@@ -9,11 +9,12 @@ Application web culinaire (PWA) : bibliothèque de recettes, foyers partagés, p
 
 | Phase | Contenu | État |
 | --- | --- | --- |
-| 0 | Comptes, foyers, invitations, profils alimentaires, design system, navigation, PWA installable | En cours de validation |
-| 1 | Bibliothèque de recettes | À venir |
+| 0 | Comptes, foyers, invitations, profils alimentaires, design system, navigation, PWA installable | Terminée |
+| 1 | Bibliothèque de recettes : saisie manuelle, photos, ingrédients structurés, portions, catégories, recherche et filtres, favoris, partage foyer/public, copie, signalements, modération, export des données | En cours de validation |
 | 2 à 6 | Import, frigo, menus et courses, assistant IA, intégrations | À venir |
 
-Les espaces Recettes, Découvrir, Frigo, Menus, Courses et Assistant affichent pour l'instant un panneau « Arrive en Phase N » : aucune fonctionnalité n'est simulée.
+Les espaces Frigo, Menus, Courses et Assistant, ainsi que l'import de recettes (photo, PDF, lien, vidéo), affichent
+pour l'instant un panneau ou un badge « Phase N » : aucune fonctionnalité n'est simulée.
 
 ## Démarrer en local
 
@@ -77,6 +78,12 @@ tests/               unit, db (RLS), e2e (Playwright)
   passent par des fonctions SQL qui vérifient les droits.
 - Les invitations sont des liens à usage limité (7 jours, 5 utilisations) dont seul le hachage est stocké.
 - Les administrateurs sont listés dans une table séparée (`app_admins`), impossible à modifier depuis l'application.
+- Recettes : lecture selon la visibilité (privée, foyer, publique), modification par l'auteur ou les membres du foyer
+  autorisés, garde-fous en base (un membre ne change pas le partage, une copie d'une recette d'un autre auteur ne peut
+  pas être republiée, publication soumise à la confirmation des droits), quotas anti-abus (créations, copies,
+  publications, signalements) et masquage automatique après 3 signalements.
+- Photos : bucket privé `recipe-images`, chemin `{id de recette}/{fichier}`, URL signées d'une heure, compression et
+  suppression des métadonnées dans le navigateur avant l'envoi.
 - En-têtes : CSP avec nonce, HSTS, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`.
 
 ## Déploiement
@@ -88,5 +95,7 @@ tests/               unit, db (RLS), e2e (Playwright)
    `SUPABASE_DB_PASSWORD_STAGING`, `SUPABASE_PROJECT_ID_PROD`, `SUPABASE_DB_PASSWORD_PROD`.
 4. Vercel : importer le dépôt, région des fonctions Paris (cdg1), variables d'environnement (production → projet prod,
    preview → projet staging).
-5. Se déclarer administrateur après la première inscription (SQL Editor) :
+5. Migrations : appliquées par `migrate.yml` si les secrets sont configurés ; sinon, coller dans le SQL Editor chaque
+   fichier de `supabase/migrations/` dans l'ordre (0003 recettes, 0004 référentiels pour la Phase 1).
+6. Se déclarer administrateur après la première inscription (SQL Editor) :
    `insert into public.app_admins (user_id) select id from auth.users where email = 'ton@email';`

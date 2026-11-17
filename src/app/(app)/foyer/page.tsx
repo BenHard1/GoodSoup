@@ -20,6 +20,8 @@ import {
   getHouseholdMembers,
   getMyHouseholds,
 } from "@/features/households/queries";
+import { HouseholdCategories } from "@/features/recipes/components/household-categories";
+import { getCategories } from "@/features/recipes/queries";
 import { getCurrentUser } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Mon foyer" };
@@ -31,10 +33,11 @@ export default async function HouseholdPage() {
   const [household, households] = await Promise.all([getActiveHousehold(), getMyHouseholds()]);
   if (!household) return null;
   const isOwner = household.role === "owner";
-  const [members, invitations, foodProfiles] = await Promise.all([
+  const [members, invitations, foodProfiles, categories] = await Promise.all([
     getHouseholdMembers(household.id),
     isOwner ? getActiveInvitations(household.id) : Promise.resolve([]),
     getFoodProfiles(household.id),
+    getCategories(),
   ]);
   const guests = foodProfiles.filter((f) => f.user_id === null);
 
@@ -72,6 +75,19 @@ export default async function HouseholdPage() {
             </li>
           ))}
         </ul>
+      </Card>
+
+      <Card>
+        <h2 className="text-xl font-semibold">Catégories de recettes du foyer</h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          En plus des catégories de base, créez vos propres rubriques. Elles sont partagées entre les membres du foyer.
+        </p>
+        <div className="mt-4">
+          <HouseholdCategories
+            householdId={household.id}
+            categories={categories.filter((c) => c.household_id === household.id)}
+          />
+        </div>
       </Card>
 
       {isOwner ? (
