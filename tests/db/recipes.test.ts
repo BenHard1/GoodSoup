@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { asAnon, cleanupUsers, createUser, pool, queryAs } from "./helpers";
+import { asAnon, asUser, cleanupUsers, createUser, pool, queryAs } from "./helpers";
 
 /**
  * Bibliothèque de recettes.
@@ -406,9 +406,12 @@ describe("photos (stockage)", () => {
     await expect(upload(c, `${recette}/intrus.webp`)).rejects.toThrow();
     await expect(upload(c, `pas-un-uuid/intrus.webp`)).rejects.toThrow();
     expect(await queryAs(c, "select name from storage.objects where name like $1", [`${recette}/%`])).toHaveLength(0);
-    expect(
-      await queryAs(c, "delete from storage.objects where name like $1 returning name", [`${recette}/%`]),
-    ).toHaveLength(0);
+    // Comme l'API Storage, on autorise la requête DELETE ; la RLS doit quand même la filtrer.
+    const deleted = await asUser(c, async (cl) => {
+      await cl.query("select set_config('storage.allow_delete_query', 'true', true)");
+      return (await cl.query("delete from storage.objects where name like $1 returning name", [`${recette}/%`])).rows;
+    });
+    expect(deleted).toHaveLength(0);
   });
 
   it("une image doit être rangée dans le dossier de sa recette", async () => {
