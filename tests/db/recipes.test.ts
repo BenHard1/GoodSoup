@@ -57,6 +57,8 @@ describe("référentiels", () => {
     expect(cats).toHaveLength(11);
     const units = await queryAs(a, "select code from public.units");
     expect(units.length).toBeGreaterThan(10);
+    const cc = await queryAs(a, "select label, plural, kind from public.units where code = 'cc'");
+    expect(cc).toEqual([{ label: "c. à café", plural: "c. à café", kind: "volume" }]);
     const ing = await queryAs(a, "select name from public.ingredients where normalized_name = 'oeuf'");
     expect(ing).toEqual([{ name: "œuf" }]);
   });

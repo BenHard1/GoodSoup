@@ -60,7 +60,8 @@ export function ShareButton({ title }: { title: string }) {
 
 export function ReportDialog({ recipeId, alreadyReported }: { recipeId: string; alreadyReported: boolean }) {
   const [state, action] = useActionState(reportRecipe, initialActionState);
-  if (alreadyReported) {
+  // Après l'envoi, la page se met à jour (alreadyReported) : on garde la confirmation affichée.
+  if (alreadyReported && state.status !== "success") {
     return <p className="text-sm text-ink-soft">Tu as signalé cette recette. Merci !</p>;
   }
   return (
