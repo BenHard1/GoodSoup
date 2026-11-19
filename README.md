@@ -97,5 +97,8 @@ tests/               unit, db (RLS), e2e (Playwright)
    preview → projet staging).
 5. Migrations : appliquées par `migrate.yml` si les secrets sont configurés ; sinon, coller dans le SQL Editor chaque
    fichier de `supabase/migrations/` dans l'ordre (0003 recettes, 0004 référentiels pour la Phase 1).
+   Attention : le workflow se termine en « succès » même quand il ignore la migration faute de secrets ; vérifier
+   que l'étape « Appliquer les migrations » n'est pas marquée « skipped ». Si des comptes ont été créés avant les
+   migrations, la migration 0005 leur crée le profil manquant.
 6. Se déclarer administrateur après la première inscription (SQL Editor) :
    `insert into public.app_admins (user_id) select id from auth.users where email = 'ton@email';`
