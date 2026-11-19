@@ -45,8 +45,8 @@ test.describe("Parcours frigo", () => {
     // Filtre par emplacement
     await page.getByRole("link", { name: /Congélateur/ }).click();
     await expect(page).toHaveURL(/lieu=congelateur/);
-    await expect(page.getByText("Petits pois", { exact: true })).toBeVisible();
-    await expect(page.getByText("Yaourts nature", { exact: true })).toHaveCount(0);
+    await expect(list.filter({ hasText: "Petits pois" })).toBeVisible();
+    await expect(list.filter({ hasText: "Yaourts nature" })).toHaveCount(0);
     await page.getByRole("link", { name: /^Tout/ }).click();
 
     // Accessibilité automatique
@@ -66,7 +66,7 @@ test.describe("Parcours frigo", () => {
       .filter({ hasText: "Petits pois" })
       .getByRole("button", { name: "Retirer Petits pois" })
       .click();
-    await expect(page.getByText("Petits pois", { exact: true })).toHaveCount(0);
+    await expect(list.filter({ hasText: "Petits pois" })).toHaveCount(0);
     await expect(page.getByText(/produit périmé/)).toHaveCount(0);
   });
 });
