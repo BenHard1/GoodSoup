@@ -1,16 +1,18 @@
-import { CalendarDays, Compass, Plus, Refrigerator, ShoppingBasket, Users } from "lucide-react";
+import { CalendarDays, Compass, Plus, ShoppingBasket, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getActiveHousehold, getMyProfile } from "@/features/households/queries";
+import { ExpiryReminder } from "@/features/pantry/components/expiry-reminder";
+import { countAlerts, todayIn } from "@/features/pantry/expiry";
+import { getPantryExpiryDates } from "@/features/pantry/queries";
 import { RecipeGrid } from "@/features/recipes/components/recipe-card";
 import { searchRecipes } from "@/features/recipes/queries";
 
 export const metadata: Metadata = { title: "Accueil" };
 
 const UPCOMING = [
-  { href: "/frigo", Icon: Refrigerator, title: "Mon frigo", phase: 3, text: "Ce que tu as sous la main." },
   { href: "/menus", Icon: CalendarDays, title: "Mes menus", phase: 4, text: "Le planning de la semaine." },
   { href: "/courses", Icon: ShoppingBasket, title: "Mes courses", phase: 4, text: "La liste partagée du foyer." },
 ];
@@ -27,6 +29,9 @@ export default async function HomePage() {
     hour12: false,
     timeZone: profile?.timezone ?? "Europe/Paris",
   });
+  const pantryAlerts = household
+    ? countAlerts(await getPantryExpiryDates(household.id), todayIn(profile?.timezone ?? "Europe/Paris"))
+    : { expired: 0, soon: 0 };
   const greeting = Number(hour) >= 18 || Number(hour) < 5 ? "Bonsoir" : "Bonjour";
 
   return (
@@ -57,6 +62,8 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      <ExpiryReminder expired={pantryAlerts.expired} soon={pantryAlerts.soon} linked />
 
       <section aria-labelledby="recentes">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
