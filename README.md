@@ -11,9 +11,10 @@ Application web culinaire (PWA) : bibliothèque de recettes, foyers partagés, p
 | --- | --- | --- |
 | 0 | Comptes, foyers, invitations, profils alimentaires, design system, navigation, PWA installable | Terminée |
 | 1 | Bibliothèque de recettes : saisie manuelle, photos, ingrédients structurés, portions, catégories, recherche et filtres, favoris, partage foyer/public, copie, signalements, modération, export des données | En cours de validation |
-| 2 à 6 | Import, frigo, menus et courses, assistant IA, intégrations | À venir |
+| 3 | Frigo du foyer : liste « ce que j'ai » (produit, quantité, emplacement, péremption), scan de codes-barres via Open Food Facts, alertes de péremption dans l'appli | En cours de validation |
+| 2 à 6 | Import, menus et courses, assistant IA, intégrations | À venir |
 
-Les espaces Frigo, Menus, Courses et Assistant, ainsi que l'import de recettes (photo, PDF, lien, vidéo), affichent
+Les espaces Menus, Courses et Assistant, ainsi que l'import de recettes (photo, PDF, lien, vidéo), affichent
 pour l'instant un panneau ou un badge « Phase N » : aucune fonctionnalité n'est simulée.
 
 ## Démarrer en local
@@ -96,7 +97,8 @@ tests/               unit, db (RLS), e2e (Playwright)
 4. Vercel : importer le dépôt, région des fonctions Paris (cdg1), variables d'environnement (production → projet prod,
    preview → projet staging).
 5. Migrations : appliquées par `migrate.yml` si les secrets sont configurés ; sinon, coller dans le SQL Editor chaque
-   fichier de `supabase/migrations/` dans l'ordre (0003 recettes, 0004 référentiels pour la Phase 1).
+   fichier de `supabase/migrations/` dans l'ordre (0003 recettes, 0004 référentiels pour la Phase 1,
+   `20261119120000_pantry.sql` pour le frigo ; ce dernier peut être relancé sans risque).
    Attention : le workflow se termine en « succès » même quand il ignore la migration faute de secrets ; vérifier
    que l'étape « Appliquer les migrations » n'est pas marquée « skipped ». Si des comptes ont été créés avant les
    migrations, la migration 0005 leur crée le profil manquant.
