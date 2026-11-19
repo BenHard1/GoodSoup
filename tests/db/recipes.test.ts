@@ -459,3 +459,62 @@ describe("notes personnelles", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("import de recettes (Phase 2)", () => {
+  const origin = async (id: string) =>
+    one<{
+      origin: string;
+      visibility: string;
+      household_id: string | null;
+      rights_confirmed_at: string | null;
+      source_url: string | null;
+    }>(
+      a,
+      "select origin, visibility, household_id, rights_confirmed_at, source_url from public.recipes where id = $1",
+      [id],
+    );
+
+  it("une recette importée garde son origine et reste privée, même si on demande à la publier", async () => {
+    const id = await save(
+      a,
+      baseRecipe("Importée d'un site", {
+        origin: "import_url",
+        source_url: "https://exemple.fr/soupe",
+        visibility: "public",
+        rights_confirmed: true,
+      }),
+    );
+    expect(await origin(id)).toEqual({
+      origin: "import_url",
+      visibility: "private",
+      household_id: null,
+      rights_confirmed_at: null,
+      source_url: "https://exemple.fr/soupe",
+    });
+  });
+
+  it("un import par lien exige l'adresse de la source, qu'on ne peut pas effacer ensuite", async () => {
+    await expect(save(a, baseRecipe("Sans source", { origin: "import_url" }))).rejects.toThrow(/adresse de sa source/);
+    const id = await save(a, baseRecipe("Avec source", { origin: "import_url", source_url: "https://exemple.fr/a" }));
+    await save(a, { ...baseRecipe("Avec source"), id, source_url: "" });
+    expect((await origin(id)).source_url).toBe("https://exemple.fr/a");
+  });
+
+  it("PDF et photo sont acceptés, une origine inconnue redevient « manual »", async () => {
+    const pdf = await save(a, baseRecipe("Du PDF", { origin: "import_pdf" }));
+    const photo = await save(a, baseRecipe("De la photo", { origin: "import_photo" }));
+    const forged = await save(a, baseRecipe("Fausse copie", { origin: "copy" }));
+    expect((await origin(pdf)).origin).toBe("import_pdf");
+    expect((await origin(photo)).origin).toBe("import_photo");
+    expect((await origin(forged)).origin).toBe("manual");
+  });
+
+  it("la publication d'une recette importée reste soumise à la confirmation des droits", async () => {
+    const id = await save(a, baseRecipe("À publier", { origin: "import_pdf" }));
+    await expect(save(a, { ...baseRecipe("À publier"), id, visibility: "public" })).rejects.toThrow(/droit de publier/);
+    await save(a, { ...baseRecipe("À publier"), id, visibility: "public", rights_confirmed: true });
+    const r = await origin(id);
+    expect(r.visibility).toBe("public");
+    expect(r.origin).toBe("import_pdf");
+  });
+});

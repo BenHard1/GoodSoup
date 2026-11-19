@@ -27,6 +27,8 @@ type Props = {
   /** Raison pour laquelle la publication est impossible (copie d'une recette d'un autre auteur). */
   publishBlockedReason?: string;
   isCopy?: boolean;
+  /** Relecture d'une recette importée : enregistrée en privé, le partage se règle ensuite. */
+  importOrigin?: "import_url" | "import_pdf" | "import_photo";
 };
 
 const DRAFT_PREFIX = "goodsoup:recipe-draft:";
@@ -69,9 +71,10 @@ export function RecipeForm({
   canChangeSharing,
   publishBlockedReason,
   isCopy,
+  importOrigin,
 }: Props) {
   const router = useRouter();
-  const draftKey = DRAFT_PREFIX + (initial.id ?? "nouvelle");
+  const draftKey = DRAFT_PREFIX + (initial.id ?? (importOrigin ? "import" : "nouvelle"));
   const [values, setValues] = useState(initial);
   const [dirty, setDirty] = useState(false);
   const [restorable, setRestorable] = useState<RecipeFormValues | null>(null);
@@ -601,7 +604,10 @@ export function RecipeForm({
               />
             )}
           </Field>
-          <Field label="Source : adresse web (facultatif)" error={fieldError("source_url")}>
+          <Field
+            label={importOrigin === "import_url" ? "Source : adresse web" : "Source : adresse web (facultatif)"}
+            error={fieldError("source_url")}
+          >
             {(p) => (
               <Input
                 {...p}
@@ -636,7 +642,15 @@ export function RecipeForm({
         )}
       </Section>
 
-      {canChangeSharing ? (
+      {importOrigin ? (
+        <Section title="Partage">
+          <p className="text-sm text-ink-soft">
+            Une recette importée est enregistrée en <strong className="text-ink">privé</strong>, avec sa source. Tu
+            pourras ensuite la partager avec ton foyer, ou la publier si tu confirmes en avoir le droit (recette
+            personnelle ou autorisation de l&apos;auteur), depuis « Modifier ».
+          </p>
+        </Section>
+      ) : canChangeSharing ? (
         <Section title="Partage" error={fieldError("visibility") ?? fieldError("rights_confirmed")}>
           <fieldset className="flex flex-col gap-2">
             <legend className="sr-only">Visibilité</legend>

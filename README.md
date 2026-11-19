@@ -11,9 +11,10 @@ Application web culinaire (PWA) : bibliothèque de recettes, foyers partagés, p
 | --- | --- | --- |
 | 0 | Comptes, foyers, invitations, profils alimentaires, design system, navigation, PWA installable | Terminée |
 | 1 | Bibliothèque de recettes : saisie manuelle, photos, ingrédients structurés, portions, catégories, recherche et filtres, favoris, partage foyer/public, copie, signalements, modération, export des données | En cours de validation |
-| 2 à 6 | Import, frigo, menus et courses, assistant IA, intégrations | À venir |
+| 2 | Import de recettes sans IA : lien (données schema.org), PDF (texte, ou OCR si scanné), photo (OCR dans le navigateur), relecture obligatoire avant enregistrement | En cours de validation |
+| 3 à 6 | Frigo, menus et courses, assistant IA, intégrations, import vidéo | À venir |
 
-Les espaces Frigo, Menus, Courses et Assistant, ainsi que l'import de recettes (photo, PDF, lien, vidéo), affichent
+Les espaces Frigo, Menus, Courses et Assistant, ainsi que l'import de recettes par vidéo, affichent
 pour l'instant un panneau ou un badge « Phase N » : aucune fonctionnalité n'est simulée.
 
 ## Démarrer en local
@@ -72,6 +73,21 @@ supabase/templates   e-mails d'authentification en français
 tests/               unit, db (RLS), e2e (Playwright)
 ```
 
+## Import de recettes (Phase 2)
+
+- **Sans IA ni service tiers.** Lien : la page est lue par le serveur de l'app, puis ses données `schema.org/Recipe`
+  (JSON-LD) sont analysées ; à défaut, le texte de la page. PDF : texte lu dans le navigateur avec pdf.js, OCR si le PDF
+  est scanné. Photo : OCR dans le navigateur avec Tesseract.js ; la photo n'est envoyée nulle part, seul le texte lu
+  est transmis au serveur de l'app pour être structuré.
+- Moteur OCR, modèle français et worker pdf.js sont copiés dans `public/vendor` par `scripts/copy-import-assets.mjs`
+  (lancé avant `dev` et `build`) : aucun CDN, compatible CSP.
+- Toujours un écran de relecture (le formulaire de recette pré-rempli) ; la recette est enregistrée **privée**, avec sa
+  source (`origin` = `import_url`, `import_pdf` ou `import_photo`). La publier reste soumis à la confirmation des droits.
+- Lien : protection SSRF (http(s), ports standard, adresses privées refusées à la connexion même, 5 redirections,
+  3 Mo, 10 s). Quota : 100 imports par jour et par compte.
+- Brancher une IA plus tard : fournir `recipeExtractor` dans `src/lib/ai/provider.ts` ; `getRecipeExtractor()`
+  (`src/features/import/extractor.ts`) l'utilisera à la place des règles, sans changer les écrans.
+
 ## Sécurité
 
 - Toutes les tables ont la Row Level Security activée ; les opérations sensibles (créer, rejoindre, quitter un foyer, inviter)
@@ -96,7 +112,8 @@ tests/               unit, db (RLS), e2e (Playwright)
 4. Vercel : importer le dépôt, région des fonctions Paris (cdg1), variables d'environnement (production → projet prod,
    preview → projet staging).
 5. Migrations : appliquées par `migrate.yml` si les secrets sont configurés ; sinon, coller dans le SQL Editor chaque
-   fichier de `supabase/migrations/` dans l'ordre (0003 recettes, 0004 référentiels pour la Phase 1).
+   fichier de `supabase/migrations/` dans l'ordre (0003 recettes, 0004 référentiels pour la Phase 1, 0006 import pour la
+   Phase 2 ; 0006 peut être relancée sans risque).
    Attention : le workflow se termine en « succès » même quand il ignore la migration faute de secrets ; vérifier
    que l'étape « Appliquer les migrations » n'est pas marquée « skipped ». Si des comptes ont été créés avant les
    migrations, la migration 0005 leur crée le profil manquant.

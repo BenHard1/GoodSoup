@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ressources de l'import copiées depuis node_modules (scripts/copy-import-assets.mjs).
+    "public/vendor/**",
   ]),
 ]);
 

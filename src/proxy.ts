@@ -12,6 +12,8 @@ function buildCsp(nonce: string) {
     `img-src 'self' blob: data: ${supabase}`,
     "font-src 'self'",
     `connect-src 'self' ${supabase}`,
+    // Import PDF et photo : workers pdf.js et Tesseract servis depuis /vendor (aucun CDN tiers).
+    "worker-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -37,7 +39,7 @@ export const config = {
   matcher: [
     {
       source:
-        "/((?!_next/static|_next/image|favicon.ico|icons/|manifest.webmanifest|sw.js|.*\\.(?:png|svg|jpg|jpeg|webp|ico)$).*)",
+        "/((?!_next/static|_next/image|favicon.ico|icons/|vendor/|manifest.webmanifest|sw.js|.*\\.(?:png|svg|jpg|jpeg|webp|ico)$).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },
