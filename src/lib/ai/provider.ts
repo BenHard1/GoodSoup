@@ -1,12 +1,20 @@
+import type { RecipeExtractor } from "@/features/import/extractor";
+
 /**
- * Point d'extension IA (Phase 2+). Aucune IA n'est utilisée en Phases 0-1 :
+ * Point d'extension IA. Aucune IA n'est utilisée pour l'instant :
  * le fournisseur « none » répond explicitement que le service n'est pas activé.
+ *
+ * Pour brancher une IA plus tard : implémenter `AiProvider` (et, pour l'import de recettes,
+ * `recipeExtractor`), puis le retourner depuis `getAiProvider()` selon `AI_PROVIDER`.
+ * L'import utilisera alors automatiquement cet extracteur à la place des règles simples.
  */
 export type AiAvailability = { enabled: false; reason: string } | { enabled: true; provider: string };
 
 export interface AiProvider {
   readonly name: string;
   availability(): AiAvailability;
+  /** Structuration d'une recette importée (lien, texte de PDF ou de photo). Facultatif. */
+  readonly recipeExtractor?: RecipeExtractor;
 }
 
 export const noneProvider: AiProvider = {

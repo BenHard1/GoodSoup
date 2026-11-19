@@ -34,6 +34,8 @@ export type RecipeFormValues = {
   source_url: string;
   source_name: string;
   attribution: string;
+  /** Recette importée (lien, PDF, photo) : fixée à la création, jamais modifiable ensuite. */
+  origin?: "import_url" | "import_pdf" | "import_photo";
   ingredients: IngredientRow[];
   steps: StepRow[];
 };

@@ -55,6 +55,7 @@ export function valuesToPayload(v: RecipeFormValues): { payload: Record<string, 
     payload: {
       ...(v.id ? { id: v.id } : {}),
       ...(v.expected_updated_at ? { expected_updated_at: v.expected_updated_at } : {}),
+      ...(v.origin && !v.id ? { origin: v.origin } : {}),
       title: v.title,
       description: v.description,
       servings: v.servings,

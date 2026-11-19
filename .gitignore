@@ -46,3 +46,6 @@ next-env.d.ts
 /test-results
 /supabase/.temp
 /supabase/.branches
+
+# ressources de l'import copiées depuis node_modules (scripts/copy-import-assets.mjs)
+/public/vendor/

@@ -73,6 +73,21 @@ supabase/templates   e-mails d'authentification en français
 tests/               unit, db (RLS), e2e (Playwright)
 ```
 
+## Import de recettes (Phase 2)
+
+- **Sans IA ni service tiers.** Lien : la page est lue par le serveur de l'app, puis ses données `schema.org/Recipe`
+  (JSON-LD) sont analysées ; à défaut, le texte de la page. PDF : texte lu dans le navigateur avec pdf.js, OCR si le PDF
+  est scanné. Photo : OCR dans le navigateur avec Tesseract.js ; la photo n'est envoyée nulle part, seul le texte lu
+  est transmis au serveur de l'app pour être structuré.
+- Moteur OCR, modèle français et worker pdf.js sont copiés dans `public/vendor` par `scripts/copy-import-assets.mjs`
+  (lancé avant `dev` et `build`) : aucun CDN, compatible CSP.
+- Toujours un écran de relecture (le formulaire de recette pré-rempli) ; la recette est enregistrée **privée**, avec sa
+  source (`origin` = `import_url`, `import_pdf` ou `import_photo`). La publier reste soumis à la confirmation des droits.
+- Lien : protection SSRF (http(s), ports standard, adresses privées refusées à la connexion même, 5 redirections,
+  3 Mo, 10 s). Quota : 100 imports par jour et par compte.
+- Brancher une IA plus tard : fournir `recipeExtractor` dans `src/lib/ai/provider.ts` ; `getRecipeExtractor()`
+  (`src/features/import/extractor.ts`) l'utilisera à la place des règles, sans changer les écrans.
+
 ## Sécurité
 
 - Toutes les tables ont la Row Level Security activée ; les opérations sensibles (créer, rejoindre, quitter un foyer, inviter)

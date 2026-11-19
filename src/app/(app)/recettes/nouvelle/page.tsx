@@ -1,5 +1,6 @@
 import { Camera, FileText, Link2, PenLine, Video } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { getActiveHousehold, getMyHouseholds } from "@/features/households/queries";
 import { RecipeForm } from "@/features/recipes/components/recipe-form";
@@ -8,12 +9,13 @@ import { getCategories, getIngredientNames, getUnits } from "@/features/recipes/
 
 export const metadata: Metadata = { title: "Nouvelle recette" };
 
-const LATER = [
-  { Icon: Camera, label: "Depuis une photo", phase: 2 },
-  { Icon: FileText, label: "Depuis un PDF", phase: 2 },
-  { Icon: Link2, label: "Depuis un lien", phase: 2 },
-  { Icon: Video, label: "Depuis une vidéo", phase: 6 },
-];
+const IMPORTS = [
+  { Icon: Link2, label: "Depuis un lien", href: "/recettes/importer?depuis=lien" },
+  { Icon: FileText, label: "Depuis un PDF", href: "/recettes/importer?depuis=pdf" },
+  { Icon: Camera, label: "Depuis une photo", href: "/recettes/importer?depuis=photo" },
+] as const;
+
+const LATER = [{ Icon: Video, label: "Depuis une vidéo", phase: 6 }];
 
 export default async function NewRecipePage() {
   const [units, categories, households, active, ingredientNames] = await Promise.all([
@@ -36,6 +38,16 @@ export default async function NewRecipePage() {
               <PenLine aria-hidden className="size-4" /> Saisie manuelle
             </span>
           </li>
+          {IMPORTS.map(({ Icon, label, href }) => (
+            <li key={label}>
+              <Link
+                href={href}
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-ink bg-white px-4 font-semibold text-ink hover:bg-cream"
+              >
+                <Icon aria-hidden className="size-4" /> {label}
+              </Link>
+            </li>
+          ))}
           {LATER.map(({ Icon, label, phase }) => (
             <li key={label}>
               <span

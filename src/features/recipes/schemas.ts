@@ -86,10 +86,18 @@ export const recipePayloadSchema = z
     source_name: optionalText(200),
     attribution: optionalText(300),
     category_ids: z.array(z.uuid()).max(30).default([]),
+    origin: z.enum(["import_url", "import_pdf", "import_photo"]).optional(),
     ingredients: z.array(ingredientSchema).max(100, { error: "100 ingrédients maximum." }).default([]),
     steps: z.array(stepSchema).max(60, { error: "60 étapes maximum." }).default([]),
   })
   .superRefine((r, ctx) => {
+    if (r.origin === "import_url" && !r.id && !r.source_url) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["source_url"],
+        message: "Garde l'adresse de la page d'origine de cette recette importée.",
+      });
+    }
     if (r.visibility === "household" && !r.household_id) {
       ctx.addIssue({ code: "custom", path: ["visibility"], message: "Choisis le foyer avec qui partager." });
     }
